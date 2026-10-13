@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Countertop math - calculators</title>
+<style>
+  :root { --accent: #7a9a7a; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: Georgia, 'Times New Roman', serif; background: #f6f7f4; color: #272a25; line-height: 1.55; }
+  main { max-width: 1100px; margin: 0 auto; padding: 40px 20px 64px; }
+  h1 { font-size: 2rem; margin: 0 0 8px; color: var(--accent); }
+  .lede { margin: 0 0 14px; max-width: 640px; }
+  .note { background: #fff; border: 1px solid #dde2d8; border-left: 4px solid var(--accent); border-radius: 6px; padding: 12px 16px; font-size: 0.9rem; margin: 0 0 28px; max-width: 720px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 18px; }
+  section { background: #fff; border: 1px solid #dde2d8; border-radius: 8px; padding: 20px 22px; }
+  h2 { font-size: 1.15rem; margin: 0 0 6px; }
+  .hint { font-size: 0.9rem; color: #77816f; margin: 0 0 14px; }
+  label { display: block; font-size: 0.9rem; margin: 10px 0 3px; }
+  input { width: 100%; padding: 8px 10px; font-size: 1rem; border: 1px solid #bcc5b6; border-radius: 5px; font-family: inherit; }
+  button { margin-top: 16px; width: 100%; padding: 11px; background: var(--accent); color: #fff; border: 0; border-radius: 6px; font-size: 1rem; cursor: pointer; font-family: inherit; }
+  button:hover { filter: brightness(1.08); }
+  .out { margin-top: 14px; font-size: 1rem; min-height: 1.4em; }
+  .out.err { color: #a32222; }
+  footer { max-width: 1100px; margin: 0 auto; padding: 0 20px 40px; font-size: 0.85rem; color: #a3aa9e; }
+  a { color: var(--accent); }
+</style>
+</head>
+<body>
+<main>
+  <h1>Countertop math</h1>
+  <p class="lede">The run names the slabs, the overhang names the supports, and the sink names the ends. Exact arithmetic, every borrowed number labeled.</p>
+  <div class="note">Illustrative planning arithmetic only. Every slab, spacing and span limit is a labeled default; real counters follow the fabricator's template, the maker's span ratings and the local code.</div>
+  <div class="grid">
+    <section>
+      <h2>Slab plan</h2>
+      <p class="hint">The run names the slabs.</p>
+      <label for="s-r">Run length (cm)</label>
+      <input id="s-r" type="number" value="300" min="0" step="0.5">
+      <label for="s-s">Labeled slab length (cm)</label>
+      <input id="s-s" type="number" value="250" min="0" step="1">
+      <button id="s-go">Count the slabs</button>
+      <div class="out" id="s-out"></div>
+    </section>
+    <section>
+      <h2>Overhang plan</h2>
+      <p class="hint">The overhang names the supports.</p>
+      <label for="o-o">Overhang depth (cm)</label>
+      <input id="o-o" type="number" value="20" min="0" step="0.5">
+      <label for="o-r">Run length (cm)</label>
+      <input id="o-r" type="number" value="240" min="0" step="1">
+      <button id="o-go">Plan the supports</button>
+      <div class="out" id="o-out"></div>
+    </section>
+    <section>
+      <h2>Cutout plan</h2>
+      <p class="hint">The sink names the ends.</p>
+      <label for="c-s">Sink width (cm)</label>
+      <input id="c-s" type="number" value="50" min="0" step="0.5">
+      <label for="c-c">Counter length (cm)</label>
+      <input id="c-c" type="number" value="120" min="0" step="0.5">
+      <button id="c-go">Measure the ends</button>
+      <div class="out" id="c-out"></div>
+    </section>
+  </div>
+</main>
+<footer>Built by the app factory. <a href="index.html">About</a> &middot; <a href="https://github.com/iLanis-agent/countertopmath">Source</a></footer>
+<script src="engine.js"></script>
+<script>
+function num(id){ return parseFloat(document.getElementById(id).value); }
+function show(id, r, render){
+  var el = document.getElementById(id);
+  if (r.error) { el.textContent = r.error; el.classList.add('err'); }
+  else { el.textContent = render(r); el.classList.remove('err'); }
+}
+document.getElementById('s-go').addEventListener('click', function(){
+  var a=[num('s-r'),num('s-s')];
+  show('s-out', CountertopMath.slabPlan.apply(null,a), function(r){ return CountertopMath.renderSlab.apply(null,[r].concat(a)); });
+});
+document.getElementById('o-go').addEventListener('click', function(){
+  var a=[num('o-o'),num('o-r')];
+  show('o-out', CountertopMath.overhangPlan.apply(null,a), function(r){ return CountertopMath.renderOverhang.apply(null,[r].concat(a)); });
+});
+document.getElementById('c-go').addEventListener('click', function(){
+  var a=[num('c-s'),num('c-c')];
+  show('c-out', CountertopMath.cutoutPlan.apply(null,a), function(r){ return CountertopMath.renderCutout.apply(null,[r].concat(a)); });
+});
+</script>
+</body>
+</html>
